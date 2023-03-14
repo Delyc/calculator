@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 const App = () => {
   const [result, setResult] = useState("0");
   const [operator, setOperator] = useState("");
