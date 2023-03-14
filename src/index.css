@@ -1,12 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
-.element {
-    @apply flex items-center justify-center bg-[#dbdfde] hover:bg-opacity-40 border-collapse border border-slate-500 border-opacity-50 font-bold text-xl cursor-pointer
-}
-
-.sign {
-    @apply bg-[#f38636] text-white hover:bg-opacity-40
-}
