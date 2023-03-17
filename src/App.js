@@ -1,152 +1,115 @@
 import { useState } from "react";
-const App = () => {
-  const [result, setResult] = useState("0");
-  const [operator, setOperator] = useState("");
-  const [prev, setPrev] = useState("0");
-  const [isDot, setIsDot] = useState(false);
-  const [isOperator, setIsOperator] = useState(0);
-  const removeZero = (str) => {
-    return str.toString().charAt(0) === "0" &&
-      str.toString().length > 1 &&
-      str.toString().charAt(1) !== "."
-      ? str.toString().slice(1)
-      : str.toString();
-  };
-  const findResult = (setResults) => {
-    let findAnswer = 0;
-    switch (operator) {
-      case "+":
-        findAnswer = Number(prev) + Number(result);
-        setResults(findAnswer);
-        break;
-      case "-":
-        findAnswer = Number(prev) - Number(result);
-        setResults(findAnswer);
-        break;
-      case "x":
-        findAnswer = Number(prev) * Number(result);
-        setResults(findAnswer);
-        break;
-      case "/":
-        findAnswer = Number(prev) / Number(result);
-        setResults(findAnswer);
-        break;
-      case "%":
-        findAnswer = Number(prev) % Number(result);
-        setResults(findAnswer);
-        break;
-      default:
-        break;
+
+const Calculator = () => {
+  const [inputValue, setInputValue] = useState("0");
+  const [operand, setOperand] = useState(null);
+  const [result, setResult] = useState(null);
+  const [track, setTrack] = useState(false);
+
+  const handleNumberClick = (value) => {
+    if (inputValue === "0") {
+      setInputValue(value);
+    } else {
+      setInputValue(track ? value : inputValue.toString() + value);
+      setTrack(false);
     }
-    setPrev("0");
-    setOperator("");
-    setIsOperator(0);
-    setIsDot(false);
-    return findAnswer;
   };
+
+  const handleOperand = (operator) => {
+    setOperand(operator);
+    setResult(parseFloat(inputValue));
+    setTrack(true);
+  };
+
+  const handleEqualClick = () => {
+    const number = parseFloat(inputValue);
+    let res = null;
+    if (result !== null) {
+      switch (operand) {
+        case "+":
+          res = result + number;
+          break;
+        case "-":
+          res = result - number;
+          break;
+        case "*":
+          res = result * number;
+          break;
+        case "/":
+          res = result / number;
+          break;
+        default:
+          res = number;
+      }
+    } else {
+      res = number;
+    }
+    setResult(res);
+    setInputValue(res.toString());
+    setOperand(null);
+  };
+
+  const handleClearNumber = () => {
+    setInputValue("0");
+    setResult(null);
+    setOperand(null);
+    setTrack(false);
+  };
+  const handlesignNumber = () => {
+    setInputValue((prevInput) => -prevInput);
+  };
+
+  const handleDecimal = () => {
+    setInputValue((prevInputValue) => prevInputValue + ".");
+  };
+  const handlePercentage = () => {
+    setInputValue(inputValue / 100);
+  };
+
+  const inputData = [
+    { input: inputValue },
+    { input: "Ac", handleClick: handleClearNumber },
+    { input: "+/-", handleClick: handlesignNumber },
+    { input: "%", handleClick: handlePercentage },
+    { input: "/", handleClick: () => handleOperand("/") },
+    { input: "7", handleClick: () => handleNumberClick(7) },
+    { input: "8", handleClick: () => handleNumberClick(8) },
+    { input: "9", handleClick: () => handleNumberClick(9) },
+    { input: "*", handleClick: () => handleOperand("*") },
+    { input: "6", handleClick: () => handleNumberClick(6) },
+    { input: "5", handleClick: () => handleNumberClick(5) },
+    { input: "4", handleClick: () => handleNumberClick(4) },
+    { input: "-", handleClick: () => handleOperand("-") },
+    { input: "3", handleClick: () => handleNumberClick(3) },
+    { input: "2", handleClick: () => handleNumberClick(2) },
+    { input: "1", handleClick: () => handleNumberClick(1) },
+    { input: "+", handleClick: () => handleOperand("+") },
+    { input: "0", handleClick: () => handleNumberClick(0) },
+    { input: ".", handleClick: () => handleDecimal(".") },
+    { input: "=", handleClick: handleEqualClick },
+  ];
+
   return (
-    <div className="flex justify-center items-center font-bold text-2xl">
-      <div className="bg-[#dbdbdb] min-w-[25%]">
-        <div className="w-full p-2 flex justify-end bg-[#7a7b88] text-6xl font-medium text-white">
-          {removeZero(result)}
+    <div className="grid grid-cols-4 px-[28rem]">
+      {inputData.map((value, index) => {
+        console.log(index)
+        return(
+        <div
+        key={index}
+          className={`px-2 py-6 text-4xl text-center font-bold cursor-pointer box-border border border-gray-500 ${index === 0
+            ? "col-span-4 text-right bg-gray-500"
+            : index === 17
+              ? "col-span-2"
+              : (index % 4 === 0 || index === inputData.length - 1) &&
+              "bg-orange-500"}`}
+          onClick={value.handleClick}
+        >
+          {value.input}
         </div>
-        <div className="grid grid-cols-4">
-          <div
-            className="border flex justify-center items-center py-8"
-            onClick={() => setResult("0")}
-          >
-            AC
-          </div>
-          <div
-            className="border flex justify-center items-center py-8 cursor-pointer"
-            onClick={() =>
-              Math.sign(Number(result)) === 1
-                ? setResult(`-${Number(result)}`)
-                : setResult(`${Math.abs(Number(result))}`)
-            }
-          >
-            +/-
-          </div>
-          <div
-            className="border flex justify-center items-center py-8 cursor-pointer"
-            onClick={() => {
-              setOperator("%");
-              setIsOperator(isOperator + 1);
-              setPrev(result);
-              setResult("0");
-            }}
-          >
-            %
-          </div>
-          <div
-            className="border flex justify-center items-center py-8 cursor-pointer"
-            onClick={() => {
-              setOperator("/");
-              setIsOperator(isOperator + 1);
-              setPrev(result);
-              setResult("0");
-            }}
-          >
-            /
-          </div>
-          {[
-            "7",
-            "8",
-            "9",
-            "x",
-            "4",
-            "5",
-            "6",
-            "-",
-            "1",
-            "2",
-            "3",
-            "+",
-            "0",
-            ".",
-          ].map((item, i) => {
-            return (
-              <div
-                onClick={() => {
-                  if ((i + 1) % 4 === 0) {
-                    if (isOperator > 0) {
-                      findResult(setResult);
-                      setOperator("");
-                      setPrev(findResult(setResult));
-                      setResult("0");
-                    } else {
-                      setResult("0");
-                      setPrev(result);
-                      setOperator(item);
-                      setIsOperator(isOperator + 1);
-                    }
-                    setOperator(item);
-                    setIsDot(false);
-                  } else {
-                    if (item === "." && !isDot) {
-                      setIsDot(true);
-                      setResult(`${result}${item}`);
-                    } else if (item !== ".") {
-                      setResult(`${result}${item}`);
-                    }
-                  }
-                }}
-                className="border flex justify-center items-center py-8 cursor-pointer"
-                key={item}
-              >
-                {item}
-              </div>
-            );
+        )
+
           })}
-          <div
-            className="bg-green-900 text-4xl w-full flex justify-center items-center col-span-2"
-            onClick={() => findResult(setResult)}
-          >
-            =
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
-export default App;
+export default Calculator;
